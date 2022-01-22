@@ -1,7 +1,19 @@
 import { ChakraProvider } from '@chakra-ui/react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Home } from 'pages/Home';
+import { Dashboard } from 'pages/Dashboard';
 
 function App() {
-  return <ChakraProvider>HI</ChakraProvider>;
+  return (
+    <ChakraProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="dashboard" element={<Dashboard />} />
+        </Routes>
+      </BrowserRouter>
+    </ChakraProvider>
+  );
 }
 
 export default App;
