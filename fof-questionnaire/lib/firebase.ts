@@ -33,6 +33,10 @@ export const getForm = async (id: string) => {
     formSnapshot.docs.forEach((doc) => {
       if (doc.id === id) {
         form = doc.data();
+        form.expired_date = {
+          seconds: form.expired_date.seconds,
+          nanoseconds: form.expired_date.nanoseconds,
+        };
       }
     });
 

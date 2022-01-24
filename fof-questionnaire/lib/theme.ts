@@ -1,6 +1,15 @@
 import { extendTheme } from '@chakra-ui/react';
 
+const styles = {
+  global: {
+    body: {
+      color: 'black',
+    },
+  },
+};
+
 const colors = {
+  black: '#333333',
   fof: {
     black: '#333333',
     dark_gray: '#555555',
@@ -12,4 +21,4 @@ const colors = {
   },
 };
 
-export default extendTheme({ colors });
+export default extendTheme({ colors, styles });

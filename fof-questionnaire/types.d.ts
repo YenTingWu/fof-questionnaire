@@ -31,5 +31,6 @@ type Question = Single | Multiple | Essay | ShortAnswer;
 export type Form = {
   title: string;
   description: string;
+  expired_date: number;
   questions: Question[];
 };
