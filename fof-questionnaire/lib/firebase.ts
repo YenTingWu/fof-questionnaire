@@ -42,14 +42,16 @@ export const getForm = async (id: string) => {
 
     questionsSnapshot.docs.forEach((doc) => {
       if (!form.questions) {
-        form.questions = [doc.data()];
+        form.questions = {
+          [doc.id]: doc.data(),
+        };
         return;
       }
-      form.questions.push(doc.data());
+      form.questions[doc.id] = doc.data();
     });
 
     return form as Form;
   } catch (err) {
-    console.error(`Error: ${err}`);
+    console.error(`firebase error: ${err}`);
   }
 };

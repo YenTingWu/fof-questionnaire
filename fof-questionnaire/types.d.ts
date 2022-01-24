@@ -1,6 +1,7 @@
 type OptionsType = 'single' | 'multiple' | 'essay' | 'short_answer';
 
 type Multiple = {
+  uid?: string;
   title: string;
   options: string[];
   to?: Record<string, string>;
@@ -8,6 +9,7 @@ type Multiple = {
 };
 
 type Single = {
+  uid?: string;
   title: string;
   options: string[];
   to?: Record<string, string>;
@@ -15,12 +17,14 @@ type Single = {
 };
 
 type Essay = {
+  uid?: string;
   title: string;
   to?: Record<string, string>;
   type: 'essay';
 };
 
 type ShortAnswer = {
+  uid?: string;
   title: string;
   to?: Record<string, string>;
   type: 'short_answer';
@@ -32,5 +36,6 @@ export type Form = {
   title: string;
   description: string;
   expired_date: number;
-  questions: Question[];
+  init_id: string;
+  questions: Record<string, Question>;
 };
