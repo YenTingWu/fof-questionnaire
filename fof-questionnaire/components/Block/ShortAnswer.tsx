@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useCallback } from 'react';
 import { chakra } from '@chakra-ui/system';
 import { Wrapper as BlockWrapper } from './Wrapper';
 
@@ -10,11 +10,15 @@ interface ShortAnswerProps {
 
 export const ShortAnswer = memo(
   ({ title, value, onChange }: ShortAnswerProps) => {
-    const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-      if (!onChange) return;
-      e.preventDefault();
-      onChange(e.target.value);
-    };
+    const handleChange: React.ChangeEventHandler<HTMLInputElement> =
+      useCallback(
+        (e) => {
+          if (!onChange) return;
+          e.preventDefault();
+          onChange(e.target.value);
+        },
+        [onChange]
+      );
 
     return (
       <BlockWrapper title={title}>

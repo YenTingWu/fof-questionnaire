@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useCallback } from 'react';
 import { chakra } from '@chakra-ui/system';
 import TextareaAutosize from 'react-textarea-autosize';
 import { Wrapper as BlockWrapper } from './Wrapper';
@@ -10,11 +10,15 @@ interface EssayProps {
 }
 
 export const Essay = memo(({ title, value, onChange }: EssayProps) => {
-  const handleChange: React.ChangeEventHandler<HTMLTextAreaElement> = (e) => {
-    if (!onChange) return;
-    e.preventDefault();
-    onChange(e.target.value);
-  };
+  const handleChange: React.ChangeEventHandler<HTMLTextAreaElement> =
+    useCallback(
+      (e) => {
+        if (!onChange) return;
+        e.preventDefault();
+        onChange(e.target.value);
+      },
+      [onChange]
+    );
 
   return (
     <BlockWrapper title={title}>

@@ -1,6 +1,6 @@
 import type { Form, Question } from '@types';
 import type { NextPage } from 'next';
-import { useState } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { VStack, Heading, Text, Stack } from '@chakra-ui/layout';
 import { getForm } from '@lib/firebase';
 import { FormLayout } from '@components/FormLayout';
@@ -22,65 +22,77 @@ const INVALID_TYPE_ERROR_MESSAGE = 'Error: Invalid type';
 
 const Form: NextPage<Props> = ({ form }) => {
   const { title, description, questions: questionMap, init_id } = form;
-  const sortedQuestions = parseQuestionsToArray(questionMap, init_id);
-  const sortedAnswer = parseQuestionToFormatAnswer(sortedQuestions);
+  const sortedQuestions = useMemo(
+    () => parseQuestionsToArray(questionMap, init_id),
+    [init_id, questionMap]
+  );
+
+  const sortedAnswer = useMemo(
+    () => parseQuestionToFormatAnswer(sortedQuestions),
+    [sortedQuestions]
+  );
 
   const [questions, setQuestions] = useState<Question[]>(sortedQuestions);
   const [answers, setAnswers] = useState<(string | string[])[]>(sortedAnswer);
 
-  const handleAnswerChange = (index: number) => (v: string | string[]) => {
-    setAnswers((prev) => {
-      prev.splice(index, 1, v);
-      return [...prev];
-    });
-  };
+  const handleAnswerChange = useCallback(
+    (index: number) => (v: string | string[]) => {
+      setAnswers((prev) => {
+        prev.splice(index, 1, v);
+        return [...prev];
+      });
+    },
+    []
+  );
 
-  console.log(answers);
-
-  const blocks = questions.map((q, index) => {
-    switch (q.type) {
-      case 'single':
-        return (
-          <Single
-            key={`${q.title}_${q.uid}`}
-            title={q.title}
-            options={q.options}
-            value={answers[index] as string}
-            onChange={handleAnswerChange(index)}
-          />
-        );
-      case 'multiple':
-        return (
-          <Multiple
-            key={`${q.title}_${q.uid}`}
-            title={q.title}
-            options={q.options}
-            value={answers[index] as string[]}
-            onChange={handleAnswerChange(index)}
-          />
-        );
-      case 'essay':
-        return (
-          <Essay
-            key={`${q.title}_${q.uid}`}
-            title={q.title}
-            value={answers[index] as string}
-            onChange={handleAnswerChange(index)}
-          />
-        );
-      case 'short_answer':
-        return (
-          <ShortAnswer
-            key={`${q.title}_${q.uid}`}
-            title={q.title}
-            value={answers[index] as string}
-            onChange={handleAnswerChange(index)}
-          />
-        );
-      default:
-        throw new Error(INVALID_TYPE_ERROR_MESSAGE);
-    }
-  });
+  const blocks = useMemo(
+    () =>
+      questions.map((q, index) => {
+        switch (q.type) {
+          case 'single':
+            return (
+              <Single
+                key={`${q.title}_${q.uid}`}
+                title={q.title}
+                options={q.options}
+                value={answers[index] as string}
+                onChange={handleAnswerChange(index)}
+              />
+            );
+          case 'multiple':
+            return (
+              <Multiple
+                key={`${q.title}_${q.uid}`}
+                title={q.title}
+                options={q.options}
+                value={answers[index] as string[]}
+                onChange={handleAnswerChange(index)}
+              />
+            );
+          case 'essay':
+            return (
+              <Essay
+                key={`${q.title}_${q.uid}`}
+                title={q.title}
+                value={answers[index] as string}
+                onChange={handleAnswerChange(index)}
+              />
+            );
+          case 'short_answer':
+            return (
+              <ShortAnswer
+                key={`${q.title}_${q.uid}`}
+                title={q.title}
+                value={answers[index] as string}
+                onChange={handleAnswerChange(index)}
+              />
+            );
+          default:
+            throw new Error(INVALID_TYPE_ERROR_MESSAGE);
+        }
+      }),
+    [questions, answers, handleAnswerChange]
+  );
 
   return (
     <FormLayout>
