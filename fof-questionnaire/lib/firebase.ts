@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, getDocs } from 'firebase/firestore';
-import { Form } from '@types';
+import { getFirestore, collection, addDoc, getDocs } from 'firebase/firestore';
+import { Form, QuestionnaireData } from '@types';
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -51,6 +51,20 @@ export const getForm = async (id: string) => {
     });
 
     return form as Form;
+  } catch (err) {
+    console.error(`firebase error: ${err}`);
+  }
+};
+
+export const createSurveyData = async (
+  data: QuestionnaireData[],
+  formId: string
+) => {
+  const surveyDataRef = await collection(db, 'forms', formId, 'survey_data');
+
+  try {
+    const docRef = await addDoc(surveyDataRef, { data });
+    return docRef.id;
   } catch (err) {
     console.error(`firebase error: ${err}`);
   }

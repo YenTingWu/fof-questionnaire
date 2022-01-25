@@ -1,10 +1,11 @@
 import type { Form, Question } from '@types';
 import type { NextPage } from 'next';
+import { useRouter } from 'next/router';
 import { useState, useCallback, useMemo } from 'react';
 import { chakra } from '@chakra-ui/system';
 import { VStack, Heading, Text, Stack } from '@chakra-ui/layout';
 import { Button } from '@chakra-ui/button';
-import { getForm } from '@lib/firebase';
+import { getForm, createSurveyData } from '@lib/firebase';
 import { FormLayout } from '@components/FormLayout';
 import {
   Single,
@@ -29,7 +30,7 @@ type ServerSideCtx = {
 const INVALID_TYPE_ERROR_MESSAGE = 'Error: Invalid type';
 
 const Form: NextPage<Props> = ({ form }) => {
-  const { title, description, questions: questionMap, init_id } = form;
+  const { title, description, questions: questionMap, init_id, uid } = form;
   const sortedQuestions = useMemo(
     () => parseQuestionsToArray(questionMap, init_id),
     [init_id, questionMap]
@@ -43,6 +44,8 @@ const Form: NextPage<Props> = ({ form }) => {
   const [questions, setQuestions] = useState<Question[]>(sortedQuestions);
   const [answers, setAnswers] = useState<(string | string[])[]>(sortedAnswer);
 
+  const { push } = useRouter();
+
   const handleAnswerChange = useCallback(
     (index: number) => (v: string | string[]) => {
       setAnswers((prev) => {
@@ -52,6 +55,23 @@ const Form: NextPage<Props> = ({ form }) => {
     },
     []
   );
+
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
+    e.preventDefault();
+    if (!uid) return;
+
+    const surveyData = answers.map((item, index) => {
+      const q = questions[index];
+      return { uid: q.uid!, data: item };
+    });
+
+    try {
+      await createSurveyData(surveyData, uid);
+      push('/f/greeting');
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const blocks = useMemo(
     () =>
@@ -104,16 +124,13 @@ const Form: NextPage<Props> = ({ form }) => {
 
   return (
     <FormLayout>
-      <chakra.form>
+      <chakra.form onSubmit={handleSubmit}>
         <VStack w="full" spacing="5" alignItems="flex-start">
           <Stack w="full" spacing="5" p="5" bg="white">
             <Heading size="xl">{title}</Heading>
             <Text>{description}</Text>
           </Stack>
           {blocks}
-          <Essay title="Essay" />
-          <ShortAnswer title={'short answer'} />;
-          <Multiple title={'hi'} options={['1', '2', '3', '4']} />;
         </VStack>
         <BlockWrapper pt="10">
           <Button variant="outline" type="submit">
@@ -135,6 +152,8 @@ export const getServerSideProps = async (ctx: ServerSideCtx) => {
       },
     };
   }
+
+  form.uid = ctx.params.fid;
 
   return {
     props: {
