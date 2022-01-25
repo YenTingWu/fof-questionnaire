@@ -1,10 +1,18 @@
 import type { Form, Question } from '@types';
 import type { NextPage } from 'next';
 import { useState, useCallback, useMemo } from 'react';
+import { chakra } from '@chakra-ui/system';
 import { VStack, Heading, Text, Stack } from '@chakra-ui/layout';
+import { Button } from '@chakra-ui/button';
 import { getForm } from '@lib/firebase';
 import { FormLayout } from '@components/FormLayout';
-import { Single, Multiple, Essay, ShortAnswer } from '@components/Block';
+import {
+  Single,
+  Multiple,
+  Essay,
+  ShortAnswer,
+  Wrapper as BlockWrapper,
+} from '@components/Block';
 
 type Params = {
   fid: string;
@@ -96,16 +104,23 @@ const Form: NextPage<Props> = ({ form }) => {
 
   return (
     <FormLayout>
-      <VStack w="full" spacing="5" alignItems="flex-start">
-        <Stack w="full" spacing="5" p="5" bg="white">
-          <Heading size="xl">{title}</Heading>
-          <Text>{description}</Text>
-        </Stack>
-        {blocks}
-        <Essay title="Essay" />
-        <ShortAnswer title={'short answer'} />;
-        <Multiple title={'hi'} options={['1', '2', '3', '4']} />;
-      </VStack>
+      <chakra.form>
+        <VStack w="full" spacing="5" alignItems="flex-start">
+          <Stack w="full" spacing="5" p="5" bg="white">
+            <Heading size="xl">{title}</Heading>
+            <Text>{description}</Text>
+          </Stack>
+          {blocks}
+          <Essay title="Essay" />
+          <ShortAnswer title={'short answer'} />;
+          <Multiple title={'hi'} options={['1', '2', '3', '4']} />;
+        </VStack>
+        <BlockWrapper pt="10">
+          <Button variant="outline" type="submit">
+            Submit
+          </Button>
+        </BlockWrapper>
+      </chakra.form>
     </FormLayout>
   );
 };
