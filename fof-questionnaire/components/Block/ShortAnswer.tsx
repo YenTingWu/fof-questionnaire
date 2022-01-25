@@ -1,5 +1,5 @@
 import { chakra } from '@chakra-ui/system';
-import { Stack, Text } from '@chakra-ui/layout';
+import { Wrapper as BlockWrapper } from './Wrapper';
 
 interface ShortAnswerProps {
   title: string;
@@ -9,8 +9,7 @@ interface ShortAnswerProps {
 
 export const ShortAnswer = ({ title, value, onChange }: ShortAnswerProps) => {
   return (
-    <Stack w="full">
-      <Text>{title}</Text>
+    <BlockWrapper title={title}>
       <chakra.input
         type="text"
         value={value}
@@ -25,6 +24,6 @@ export const ShortAnswer = ({ title, value, onChange }: ShortAnswerProps) => {
           borderBottomColor: 'fof.main',
         }}
       />
-    </Stack>
+    </BlockWrapper>
   );
 };

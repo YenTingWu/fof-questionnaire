@@ -1,6 +1,7 @@
 // import { useState, memo, useMemo } from 'react';
-import { Stack, Text } from '@chakra-ui/layout';
+import { Stack } from '@chakra-ui/layout';
 import { Checkbox, CheckboxGroup } from '@chakra-ui/checkbox';
+import { Wrapper as BlockWrapper } from './Wrapper';
 
 interface MultipleProps {
   title: string;
@@ -9,8 +10,7 @@ interface MultipleProps {
 
 export const Multiple = ({ title, options }: MultipleProps) => {
   return (
-    <Stack>
-      <Text>{title}</Text>
+    <BlockWrapper title={title}>
       <CheckboxGroup>
         <Stack>
           {options.map((v) => (
@@ -20,6 +20,6 @@ export const Multiple = ({ title, options }: MultipleProps) => {
           ))}
         </Stack>
       </CheckboxGroup>
-    </Stack>
+    </BlockWrapper>
   );
 };

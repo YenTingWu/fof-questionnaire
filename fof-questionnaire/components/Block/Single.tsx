@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
-import { Stack, Text } from '@chakra-ui/layout';
+import { Stack } from '@chakra-ui/layout';
 import { Radio, RadioGroup } from '@chakra-ui/radio';
+import { Wrapper as BlockWrapper } from './Wrapper';
 
 interface SingleProps {
   title: string;
@@ -8,8 +9,7 @@ interface SingleProps {
 }
 
 export const Single = ({ title, options }: SingleProps) => (
-  <Stack>
-    <Text>{title}</Text>
+  <BlockWrapper title={title}>
     <RadioGroup>
       <Stack>
         {options.map((v) => (
@@ -19,5 +19,5 @@ export const Single = ({ title, options }: SingleProps) => (
         ))}
       </Stack>
     </RadioGroup>
-  </Stack>
+  </BlockWrapper>
 );

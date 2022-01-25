@@ -1,6 +1,6 @@
 import { chakra } from '@chakra-ui/system';
-import { Stack, Text } from '@chakra-ui/layout';
 import TextareaAutosize from 'react-textarea-autosize';
+import { Wrapper as BlockWrapper } from './Wrapper';
 
 interface EssayProps {
   title: string;
@@ -10,8 +10,7 @@ interface EssayProps {
 
 export const Essay = ({ title, value, onChange }: EssayProps) => {
   return (
-    <Stack w="full">
-      <Text>{title}</Text>
+    <BlockWrapper title={title}>
       <chakra.textarea
         as={TextareaAutosize}
         value={value}
@@ -27,6 +26,6 @@ export const Essay = ({ title, value, onChange }: EssayProps) => {
           borderBottomColor: 'fof.main',
         }}
       />
-    </Stack>
+    </BlockWrapper>
   );
 };
