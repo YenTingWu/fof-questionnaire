@@ -26,7 +26,7 @@ const Form: NextPage<Props> = ({ form }) => {
   const [currentQuestions, setCurrentQuestions] =
     useState<Question[]>(parsedQuestions);
 
-  const [currentAnswers, setCurrentAnswers] = useState(answer);
+  // const [currentAnswers, setCurrentAnswers] = useState(answer);
 
   const blocks = currentQuestions.map((q, index) => {
     switch (q.type) {
