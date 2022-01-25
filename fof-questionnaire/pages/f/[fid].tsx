@@ -1,7 +1,7 @@
 import type { Form, Question } from '@types';
 import type { NextPage } from 'next';
 import { useState } from 'react';
-import { VStack, Heading, Text } from '@chakra-ui/layout';
+import { VStack, Heading, Text, Stack } from '@chakra-ui/layout';
 import { getForm } from '@lib/firebase';
 import { FormLayout } from '@components/FormLayout';
 import { Single, Multiple, Essay, ShortAnswer } from '@components/Block';
@@ -46,8 +46,10 @@ const Form: NextPage<Props> = ({ form }) => {
   return (
     <FormLayout>
       <VStack w="full" spacing="5" alignItems="flex-start">
-        <Heading size="xl">{title}</Heading>
-        <Text>{description}</Text>
+        <Stack w="full" spacing="5" p="5" bg="white">
+          <Heading size="xl">{title}</Heading>
+          <Text>{description}</Text>
+        </Stack>
         {blocks}
         <Essay title="Essay" />
         <ShortAnswer title={'short answer'} />;

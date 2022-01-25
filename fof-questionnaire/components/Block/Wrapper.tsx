@@ -7,7 +7,7 @@ interface WrapperProps extends StackProps {
 }
 
 export const Wrapper = ({ title, children, ...restProps }: WrapperProps) => (
-  <Stack w="full" spacing="5" {...restProps}>
+  <Stack w="full" spacing="5" p="5" bg="white" {...restProps}>
     <Text>{title}</Text>
     {children}
   </Stack>

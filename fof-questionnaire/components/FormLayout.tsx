@@ -11,7 +11,6 @@ export const FormLayout = ({ children }: FormLayoutProps) => (
       w="calc(100% - 3rem)"
       minH="100vh"
       mx="auto"
-      bg="white"
       px="10"
       py="12"
     >
