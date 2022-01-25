@@ -18,28 +18,67 @@ type ServerSideCtx = {
   params: Params;
 };
 
+const INVALID_TYPE_ERROR_MESSAGE = 'Error: Invalid type';
+
 const Form: NextPage<Props> = ({ form }) => {
-  const { title, description, questions, init_id } = form;
-  const parsedQuestions = parseQuestionsToArray(questions, init_id);
-  const answer = parseQuestionToFormatAnswer(parsedQuestions);
+  const { title, description, questions: questionMap, init_id } = form;
+  const sortedQuestions = parseQuestionsToArray(questionMap, init_id);
+  const sortedAnswer = parseQuestionToFormatAnswer(sortedQuestions);
 
-  const [currentQuestions, setCurrentQuestions] =
-    useState<Question[]>(parsedQuestions);
+  const [questions, setQuestions] = useState<Question[]>(sortedQuestions);
+  const [answers, setAnswers] = useState<(string | string[])[]>(sortedAnswer);
 
-  // const [currentAnswers, setCurrentAnswers] = useState(answer);
+  const handleAnswerChange = (index: number) => (v: string | string[]) => {
+    setAnswers((prev) => {
+      prev.splice(index, 1, v);
+      return [...prev];
+    });
+  };
 
-  const blocks = currentQuestions.map((q, index) => {
+  console.log(answers);
+
+  const blocks = questions.map((q, index) => {
     switch (q.type) {
       case 'single':
-        return <Single key={q.title} title={q.title} options={q.options} />;
+        return (
+          <Single
+            key={`${q.title}_${q.uid}`}
+            title={q.title}
+            options={q.options}
+            value={answers[index] as string}
+            onChange={handleAnswerChange(index)}
+          />
+        );
       case 'multiple':
-        return <Multiple key={q.title} title={q.title} options={q.options} />;
+        return (
+          <Multiple
+            key={`${q.title}_${q.uid}`}
+            title={q.title}
+            options={q.options}
+            value={answers[index] as string[]}
+            onChange={handleAnswerChange(index)}
+          />
+        );
       case 'essay':
-        return <Essay key={q.title} title={q.title} />;
+        return (
+          <Essay
+            key={`${q.title}_${q.uid}`}
+            title={q.title}
+            value={answers[index] as string}
+            onChange={handleAnswerChange(index)}
+          />
+        );
       case 'short_answer':
-        return <ShortAnswer key={q.title} title={q.title} />;
+        return (
+          <ShortAnswer
+            key={`${q.title}_${q.uid}`}
+            title={q.title}
+            value={answers[index] as string}
+            onChange={handleAnswerChange(index)}
+          />
+        );
       default:
-        throw new Error('HI');
+        throw new Error(INVALID_TYPE_ERROR_MESSAGE);
     }
   });
 
@@ -53,6 +92,7 @@ const Form: NextPage<Props> = ({ form }) => {
         {blocks}
         <Essay title="Essay" />
         <ShortAnswer title={'short answer'} />;
+        <Multiple title={'hi'} options={['1', '2', '3', '4']} />;
       </VStack>
     </FormLayout>
   );
@@ -80,7 +120,7 @@ const parseQuestionsToArray = (
   questions: Record<string, Question>,
   initId: string
 ) => {
-  let question = questions[initId];
+  let question = { ...questions[initId] };
   question.uid = initId;
   let newQuestionArray = [question];
 
@@ -94,19 +134,21 @@ const parseQuestionsToArray = (
   return newQuestionArray;
 };
 
-const parseQuestionToFormatAnswer = (questionsArray: Question[]) => {
+const parseQuestionToFormatAnswer = (
+  questionsArray: Question[]
+): (string | string[])[] => {
   return questionsArray.map((q) => {
     switch (q.type) {
       case 'single':
-        return { uid: q.uid!, a: [] };
+        return '';
       case 'multiple':
-        return { uid: q.uid!, a: [] };
+        return [];
       case 'essay':
-        return { uid: q.uid!, a: '' };
+        return '';
       case 'short_answer':
-        return { uid: q.uid!, a: '' };
+        return '';
       default:
-        throw new Error('HI');
+        throw new Error(INVALID_TYPE_ERROR_MESSAGE);
     }
   });
 };

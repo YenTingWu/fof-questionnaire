@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { chakra } from '@chakra-ui/system';
 import TextareaAutosize from 'react-textarea-autosize';
 import { Wrapper as BlockWrapper } from './Wrapper';
@@ -5,16 +6,22 @@ import { Wrapper as BlockWrapper } from './Wrapper';
 interface EssayProps {
   title: string;
   value?: string;
-  onChange?: React.ChangeEventHandler<HTMLTextAreaElement>;
+  onChange?: (v: string) => void;
 }
 
-export const Essay = ({ title, value, onChange }: EssayProps) => {
+export const Essay = memo(({ title, value, onChange }: EssayProps) => {
+  const handleChange: React.ChangeEventHandler<HTMLTextAreaElement> = (e) => {
+    if (!onChange) return;
+    e.preventDefault();
+    onChange(e.target.value);
+  };
+
   return (
     <BlockWrapper title={title}>
       <chakra.textarea
         as={TextareaAutosize}
         value={value}
-        onChange={onChange}
+        onChange={handleChange}
         borderBottomColor="fof.secondary"
         borderBottomWidth={2}
         maxW="500px"
@@ -28,4 +35,6 @@ export const Essay = ({ title, value, onChange }: EssayProps) => {
       />
     </BlockWrapper>
   );
-};
+});
+
+Essay.displayName = 'Essay';
