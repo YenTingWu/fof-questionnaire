@@ -1,4 +1,4 @@
-type OptionsType = 'single' | 'multiple' | 'essay' | 'short_answer';
+export type OptionsType = 'single' | 'multiple' | 'essay' | 'short_answer';
 
 type Multiple = {
   uid?: string;

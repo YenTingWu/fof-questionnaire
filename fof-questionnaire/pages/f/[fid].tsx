@@ -1,4 +1,4 @@
-import type { Form, Question } from '@types';
+import type { Form, Question, OptionsType } from '@types';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useState, useCallback, useMemo } from 'react';
@@ -14,6 +14,7 @@ import {
   ShortAnswer,
   Wrapper as BlockWrapper,
 } from '@components/Block';
+import getLast from 'lodash/fp/last';
 
 type Params = {
   fid: string;
@@ -56,6 +57,25 @@ const Form: NextPage<Props> = ({ form }) => {
     []
   );
 
+  const handleNextQuestionButtonClick = useCallback(() => {
+    const lastQ = getLast(questions);
+    const lastA = getLast(answers);
+
+    if (typeof lastQ?.to !== 'object' || typeof lastA !== 'string') return;
+
+    const { to } = lastQ;
+
+    const nextId = to[lastA] || to['base'];
+
+    const nextItem = { ...questionMap[nextId] };
+    if (!nextItem) return;
+
+    nextItem.uid = nextId;
+
+    setQuestions((prev) => [...prev, nextItem]);
+    setAnswers((prev) => [...prev, getInitValueDependOnType(nextItem.type)]);
+  }, [questionMap, questions, answers]);
+
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
     if (!uid) return;
@@ -85,6 +105,12 @@ const Form: NextPage<Props> = ({ form }) => {
                 options={q.options}
                 value={answers[index] as string}
                 onChange={handleAnswerChange(index)}
+                isLast={index === questions.length - 1}
+                onNextQuestionButtonClick={
+                  typeof q.to === 'object'
+                    ? handleNextQuestionButtonClick
+                    : undefined
+                }
               />
             );
           case 'multiple':
@@ -119,7 +145,7 @@ const Form: NextPage<Props> = ({ form }) => {
             throw new Error(INVALID_TYPE_ERROR_MESSAGE);
         }
       }),
-    [questions, answers, handleAnswerChange]
+    [questions, answers, handleAnswerChange, handleNextQuestionButtonClick]
   );
 
   return (
@@ -180,23 +206,25 @@ const parseQuestionsToArray = (
   return newQuestionArray;
 };
 
+const getInitValueDependOnType = (type: OptionsType): string | string[] => {
+  switch (type) {
+    case 'single':
+      return '';
+    case 'multiple':
+      return [];
+    case 'essay':
+      return '';
+    case 'short_answer':
+      return '';
+    default:
+      throw new Error(INVALID_TYPE_ERROR_MESSAGE);
+  }
+};
+
 const parseQuestionToFormatAnswer = (
   questionsArray: Question[]
 ): (string | string[])[] => {
-  return questionsArray.map((q) => {
-    switch (q.type) {
-      case 'single':
-        return '';
-      case 'multiple':
-        return [];
-      case 'essay':
-        return '';
-      case 'short_answer':
-        return '';
-      default:
-        throw new Error(INVALID_TYPE_ERROR_MESSAGE);
-    }
-  });
+  return questionsArray.map((q) => getInitValueDependOnType(q.type));
 };
 
 export default Form;
