@@ -5,11 +5,15 @@ import { FcGoogle } from 'react-icons/fc';
 
 interface SocialLoginButtonProps {
   type: 'google';
+  onClick?: () => void;
 }
 
-export const SocialLoginButton = ({ type }: SocialLoginButtonProps) => {
+export const SocialLoginButton = ({
+  type,
+  onClick,
+}: SocialLoginButtonProps) => {
   return (
-    <Button variant="outline" colorScheme="blue">
+    <Button onClick={onClick} variant="outline" colorScheme="blue">
       <HStack spacing="3">
         <chakra.span>
           <FcGoogle fontSize="24px" />

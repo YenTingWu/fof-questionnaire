@@ -2,6 +2,7 @@ import { Flex, Stack, Text } from '@chakra-ui/layout';
 import { chakra } from '@chakra-ui/system';
 import { DefaultLayout } from 'components/DefaultLayout';
 import { SocialLoginButton } from 'components/SocialLoginButton';
+import { signInWithGoogle } from 'lib/firebase';
 
 export const Home = () => {
   return (
@@ -27,7 +28,7 @@ export const Home = () => {
               Choose a sign in option
             </Text>
             <Stack spacing="5">
-              <SocialLoginButton type="google" />
+              <SocialLoginButton onClick={signInWithGoogle} type="google" />
               <SocialLoginButton type="google" />
             </Stack>
           </Flex>
