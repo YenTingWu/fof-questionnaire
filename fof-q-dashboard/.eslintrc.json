@@ -30,6 +30,7 @@
   "rules": {
     // React does not have to be in scope when using the version after 17
     "react/jsx-uses-react": "off",
-    "react/react-in-jsx-scope": "off"
+    "react/react-in-jsx-scope": "off",
+    "@typescript-eslint/no-empty-interface": "off"
   }
 }

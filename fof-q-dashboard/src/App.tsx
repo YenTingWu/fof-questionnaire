@@ -2,10 +2,11 @@ import { ChakraProvider } from '@chakra-ui/react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Home } from 'pages/Home';
 import { Dashboard } from 'pages/Dashboard';
+import theme from 'lib/theme';
 
 function App() {
   return (
-    <ChakraProvider>
+    <ChakraProvider theme={theme}>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
