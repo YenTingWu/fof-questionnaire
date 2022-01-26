@@ -4,6 +4,7 @@ const styles = {
   global: {
     body: {
       color: 'black',
+      bgColor: '#A0AEC0',
       fontFamily: 'Noto Sans TC, "sans-serif"',
     },
   },

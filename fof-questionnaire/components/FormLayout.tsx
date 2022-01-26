@@ -5,14 +5,15 @@ interface FormLayoutProps {
 }
 
 export const FormLayout = ({ children }: FormLayoutProps) => (
-  <Box w="full" bgColor="fof.secondary">
+  <Box w="full">
     <Box
       maxW="800px"
       w="calc(100% - 3rem)"
       minH="100vh"
       mx="auto"
       px="10"
-      py="12"
+      pt="12"
+      pb="40"
     >
       {children}
     </Box>

@@ -7,14 +7,9 @@ import { VStack, Heading, Text, Stack } from '@chakra-ui/layout';
 import { Button } from '@chakra-ui/button';
 import { getForm, createSurveyData } from '@lib/firebase';
 import { FormLayout } from '@components/FormLayout';
-import {
-  Single,
-  Multiple,
-  Essay,
-  ShortAnswer,
-  Wrapper as BlockWrapper,
-} from '@components/Block';
+import { Single, Multiple, Essay, ShortAnswer } from '@components/Block';
 import getLast from 'lodash/fp/last';
+import isArray from 'lodash/fp/isArray';
 
 type Params = {
   fid: string;
@@ -31,7 +26,13 @@ type ServerSideCtx = {
 const INVALID_TYPE_ERROR_MESSAGE = 'Error: Invalid type';
 
 const Form: NextPage<Props> = ({ form }) => {
-  const { title, description, questions: questionMap, init_id, uid } = form;
+  const {
+    title,
+    description,
+    questions: questionMap,
+    init_id,
+    uid: formUid,
+  } = form;
   const sortedQuestions = useMemo(
     () => parseQuestionsToArray(questionMap, init_id),
     [init_id, questionMap]
@@ -62,6 +63,7 @@ const Form: NextPage<Props> = ({ form }) => {
     const lastA = getLast(answers);
 
     if (typeof lastQ?.to !== 'object' || typeof lastA !== 'string') return;
+    if (lastA === '') return;
 
     const { to } = lastQ;
 
@@ -78,7 +80,11 @@ const Form: NextPage<Props> = ({ form }) => {
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
-    if (!uid) return;
+    const lastQ = getLast(questions);
+
+    if (!formUid) return;
+    if (!checkIsAnswerValid(answers)) return;
+    if (lastQ?.to) return;
 
     const surveyData = answers.map((item, index) => {
       const q = questions[index];
@@ -86,7 +92,7 @@ const Form: NextPage<Props> = ({ form }) => {
     });
 
     try {
-      await createSurveyData(surveyData, uid);
+      await createSurveyData(surveyData, formUid);
       push('/f/greeting');
     } catch (err) {
       console.log(err);
@@ -98,6 +104,7 @@ const Form: NextPage<Props> = ({ form }) => {
       questions.map((q, index) => {
         switch (q.type) {
           case 'single':
+            const isLast = index === questions.length - 1;
             return (
               <Single
                 key={`${q.title}_${q.uid}`}
@@ -106,6 +113,7 @@ const Form: NextPage<Props> = ({ form }) => {
                 value={answers[index] as string}
                 onChange={handleAnswerChange(index)}
                 isLast={index === questions.length - 1}
+                isDisabled={typeof q.to === 'object' && !isLast}
                 onNextQuestionButtonClick={
                   typeof q.to === 'object'
                     ? handleNextQuestionButtonClick
@@ -150,19 +158,26 @@ const Form: NextPage<Props> = ({ form }) => {
 
   return (
     <FormLayout>
-      <chakra.form onSubmit={handleSubmit}>
+      <chakra.form display="flex" flexDir="column" onSubmit={handleSubmit}>
         <VStack w="full" spacing="5" alignItems="flex-start">
-          <Stack w="full" spacing="5" p="5" bg="white">
+          <Stack w="full" spacing="5" p="5" bg="white" borderRadius="xl">
             <Heading size="xl">{title}</Heading>
             <Text>{description}</Text>
           </Stack>
           {blocks}
         </VStack>
-        <BlockWrapper pt="10">
-          <Button variant="outline" type="submit">
-            Submit
+        {!getLast(questions)?.to && (
+          <Button
+            alignSelf="flex-end"
+            mt="10"
+            marginX="auto"
+            // variant="outline"
+            colorScheme="gray"
+            type="submit"
+          >
+            寫完了
           </Button>
-        </BlockWrapper>
+        )}
       </chakra.form>
     </FormLayout>
   );
@@ -219,6 +234,14 @@ const getInitValueDependOnType = (type: OptionsType): string | string[] => {
     default:
       throw new Error(INVALID_TYPE_ERROR_MESSAGE);
   }
+};
+
+const checkIsAnswerValid = (answers: (string | string[])[]) => {
+  return answers.every((a) => {
+    if (isArray(a) && a.length >= 1) return true;
+    if (typeof a === 'string' && a !== '') return true;
+    return false;
+  });
 };
 
 const parseQuestionToFormatAnswer = (

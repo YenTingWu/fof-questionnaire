@@ -2,15 +2,13 @@ import { memo } from 'react';
 import { chakra } from '@chakra-ui/system';
 import { Stack } from '@chakra-ui/layout';
 import { Radio, RadioGroup } from '@chakra-ui/radio';
+import type { RadioGroupProps } from '@chakra-ui/radio';
 import { Button } from '@chakra-ui/button';
 import { Wrapper as BlockWrapper } from './Wrapper';
 
-interface SingleProps {
+interface SingleProps extends Omit<RadioGroupProps, 'children'> {
   title: string;
   options: string[];
-  onChange?: (value: string) => void;
-  value?: string;
-  defaultValue?: string;
   isLast?: boolean;
   onNextQuestionButtonClick?: () => void;
 }
@@ -24,6 +22,7 @@ export const Single = memo(
     defaultValue,
     isLast,
     onNextQuestionButtonClick,
+    ...restProps
   }: SingleProps) => {
     return (
       <BlockWrapper title={title}>
@@ -31,6 +30,7 @@ export const Single = memo(
           value={value}
           defaultValue={defaultValue}
           onChange={onChange}
+          {...restProps}
         >
           <Stack>
             {options.map((v, index) => (
