@@ -3,8 +3,11 @@ import { chakra } from '@chakra-ui/system';
 import { DefaultLayout } from 'components/DefaultLayout';
 import { SocialLoginButton } from 'components/SocialLoginButton';
 import { signInWithGoogle } from 'lib/firebase';
+import { useUser } from 'hooks/useUser';
 
 export const Home = () => {
+  const user = useUser();
+
   return (
     <DefaultLayout>
       <Flex

@@ -31,27 +31,20 @@ const provider = new GoogleAuthProvider();
 provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
 const auth = getAuth();
 
-export const signInWithGoogle = async () => {
+export const signInWithGoogle = () => {
   try {
     signInWithRedirect(auth, provider);
-
-    const result = await getRedirectResult(auth, provider);
-
-    if (result == null) return;
-
-    const credential = GoogleAuthProvider.credentialFromResult(result);
-    const token = credential?.accessToken;
-
-    const user = result.user;
-
-    console.log(user);
-  } catch (err: any) {
-    if (typeof err === 'object') {
-      const errorCode = err?.code;
-      const errorMessage = err.message;
-
-      const email = err.email;
-      const credential = GoogleAuthProvider.credentialFromError(err);
-    }
+  } catch (err) {
+    console.log(err);
   }
+};
+
+export const getSignInResult = async () => {
+  const result = await getRedirectResult(auth);
+
+  if (result == null) return;
+
+  const credential = GoogleAuthProvider.credentialFromResult(result);
+
+  return result.user;
 };
